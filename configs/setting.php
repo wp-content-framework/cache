@@ -19,7 +19,7 @@ return [
 		'Performance' => [
 			'10' => [
 				'cache_enabled' => [
-					'label'   => 'Cache validity.',
+					'label'   => 'Cache validity',
 					'type'    => 'bool',
 					'default' => true,
 				],
