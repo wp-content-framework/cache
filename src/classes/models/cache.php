@@ -46,6 +46,14 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	}
 
 	/**
+	 * clear cache
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function clear_cache() {
+		$this->flush();
+	}
+
+	/**
 	 * @param string $key
 	 * @param string $group
 	 *

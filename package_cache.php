@@ -34,6 +34,7 @@ class Package_Cache extends Package_Base {
 	public function get_configs() {
 		return [
 			'config',
+			'filter',
 			'map',
 			'setting',
 		];
