@@ -15,13 +15,16 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	'999' => [
+	'100' => [
 		'Performance' => [
 			'10' => [
 				'cache_enabled' => [
 					'label'   => 'Cache validity',
 					'type'    => 'bool',
-					'default' => true,
+					'default' => function ( $app ) {
+						/** @var \WP_Framework $app */
+						return ! $app->utility->definedv( 'WP_DEBUG' ) || $app->utility->definedv( 'WP_FRAMEWORK_FORCE_CACHE' );
+					},
 				],
 			],
 		],
