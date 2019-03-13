@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.1
+ * @version 0.0.2
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -42,9 +42,9 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 					/** @noinspection PhpIncludeInspection */
 					require_once $path;
 
-			if ( ! class_exists( $cache_class ) ) {
-				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
-			}
+					if ( ! class_exists( $cache_class ) ) {
+						$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
+					}
 				}
 			}
 		}
