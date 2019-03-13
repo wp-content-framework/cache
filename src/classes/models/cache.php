@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.1
+ * @version 0.0.2
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -32,17 +32,32 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	 * initialized
 	 */
 	protected function initialized() {
+		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
 		if ( $this->apply_filters( 'cache_enabled' ) && $cache_type = $this->app->get_config( 'config', 'cache_type' ) ) {
-			$cache_type  = ucwords( strtolower( $cache_type ) );
-			$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\{$cache_type}";
+			$cache_type  = strtolower( $cache_type );
+			$path        = __DIR__ . DS . 'cache' . DS . $cache_type . '.php';
+			$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
 			if ( ! class_exists( $cache_class ) ) {
-				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
+				if ( file_exists( $path ) && is_readable( $path ) ) {
+					/** @noinspection PhpIncludeInspection */
+					require_once $path;
+
+					if ( ! class_exists( $cache_class ) ) {
+						$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
+					}
+				}
 			}
-		} else {
-			$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
 		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
+	}
+
+	/**
+	 * clear cache
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function clear_cache() {
+		$this->flush();
 	}
 
 	/**
