@@ -1,6 +1,6 @@
 <?php
 /**
- * WP_Framework_Cache Models Define Test
+ * WP_Framework_Cache TestCase
  *
  * @version 0.0.3
  * @author Technote
