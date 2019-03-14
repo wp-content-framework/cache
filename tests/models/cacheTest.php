@@ -24,9 +24,15 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	private static $_option;
 
+	/**
+	 * @var \WP_Framework_Cache\Classes\Models\Cache\Kv $_kv
+	 */
+	private static $_kv;
+
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
 		static::$_option = \WP_Framework_Cache\Classes\Models\Cache\Option::get_instance( static::$app );
+		static::$_kv     = \WP_Framework_Cache\Classes\Models\Cache\Kv::get_instance( static::$app );
 	}
 
 	/**
@@ -38,6 +44,7 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_exists1( $expected, $key, $group ) {
 		$this->assertEquals( $expected, static::$_option->exists( $key, $group ) );
+		$this->assertEquals( $expected, static::$_kv->exists( $key, $group ) );
 	}
 
 	/**
@@ -60,6 +67,7 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_get1( $expected, $key, $group, $default ) {
 		$this->assertEquals( $expected, static::$_option->get( $key, $group, $default ) );
+		$this->assertEquals( $expected, static::$_kv->get( $key, $group, $default ) );
 	}
 
 	/**
@@ -86,6 +94,7 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_set( $expected, $key, $value, $group, $expire ) {
 		$this->assertEquals( $expected, static::$_option->set( $key, $value, $group, $expire ) );
+		$this->assertEquals( $expected, static::$_kv->set( $key, $value, $group, $expire ) );
 	}
 
 	/**
@@ -113,6 +122,7 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_exists2( $expected, $key, $group ) {
 		$this->assertEquals( $expected, static::$_option->exists( $key, $group ) );
+		$this->assertEquals( $expected, static::$_kv->exists( $key, $group ) );
 	}
 
 	/**
@@ -144,6 +154,7 @@ class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
 			sleep( $sleep );
 		}
 		$this->assertEquals( $expected, static::$_option->get( $key, $group, $default ) );
+		$this->assertEquals( $expected, static::$_kv->get( $key, $group, $default ) );
 	}
 
 	/**
