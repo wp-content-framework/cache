@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.2
+ * @version 0.0.3
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -19,9 +19,9 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Cache
  * @package WP_Framework_Cache\Classes\Models
  */
-class Cache implements \WP_Framework_Cache\Interfaces\Cache {
+class Cache implements \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Common\Interfaces\Uninstall {
 
-	use \WP_Framework_Cache\Traits\Cache;
+	use \WP_Framework_Cache\Traits\Cache, \WP_Framework_Common\Traits\Uninstall;
 
 	/**
 	 * @var \WP_Framework_Cache\Interfaces\Cache $_cache
@@ -32,20 +32,20 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	 * initialized
 	 */
 	protected function initialized() {
-		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
+		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Kv';
 		if ( $this->apply_filters( 'cache_enabled' ) && $cache_type = $this->app->get_config( 'config', 'cache_type' ) ) {
-			$cache_type  = strtolower( $cache_type );
-			$path        = __DIR__ . DS . 'cache' . DS . $cache_type . '.php';
-			$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
-			if ( ! class_exists( $cache_class ) ) {
-				if ( file_exists( $path ) && is_readable( $path ) ) {
-					/** @noinspection PhpIncludeInspection */
-					require_once $path;
+			if ( in_array( $cache_type, [
+				'option',
+				'kv',
+			] ) ) {
+				$cache_type  = strtolower( $cache_type );
+				$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
+			} else {
+				$cache_class = $cache_type;
+			}
 
-					if ( ! class_exists( $cache_class ) ) {
-						$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
-					}
-				}
+			if ( ! class_exists( $cache_class ) || ! is_subclass_of( $cache_class, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
+				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Kv';
 			}
 		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
@@ -127,5 +127,19 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	 */
 	public function close() {
 		return $this->_cache->close();
+	}
+
+	/**
+	 * uninstall
+	 */
+	public function uninstall() {
+		$this->clear_cache();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_uninstall_priority() {
+		return 50;
 	}
 }
