@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.2
+ * @version 0.0.3
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -38,16 +38,16 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Commo
 				'option',
 				'kv',
 			] ) ) {
-			$cache_type  = strtolower( $cache_type );
-			$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
+				$cache_type  = strtolower( $cache_type );
+				$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
 			} else {
 				$cache_class = $cache_type;
 			}
 
 			if ( ! class_exists( $cache_class ) || ! is_subclass_of( $cache_class, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
 				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Kv';
-					}
-				}
+			}
+		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
 	}
