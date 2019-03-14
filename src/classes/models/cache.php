@@ -34,20 +34,20 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	protected function initialized() {
 		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
 		if ( $this->apply_filters( 'cache_enabled' ) && $cache_type = $this->app->get_config( 'config', 'cache_type' ) ) {
+			if ( in_array( $cache_type, [
+				'option',
+				'none',
+			] ) ) {
 			$cache_type  = strtolower( $cache_type );
-			$path        = __DIR__ . DS . 'cache' . DS . $cache_type . '.php';
 			$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
-			if ( ! class_exists( $cache_class ) ) {
-				if ( file_exists( $path ) && is_readable( $path ) ) {
-					/** @noinspection PhpIncludeInspection */
-					require_once $path;
+			} else {
+				$cache_class = $cache_type;
+			}
 
-					if ( ! class_exists( $cache_class ) ) {
+			if ( ! class_exists( $cache_class ) || ! is_subclass_of( $cache_class, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
 						$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\None';
 					}
 				}
-			}
-		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
 	}
