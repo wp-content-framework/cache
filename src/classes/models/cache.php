@@ -19,9 +19,9 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Cache
  * @package WP_Framework_Cache\Classes\Models
  */
-class Cache implements \WP_Framework_Cache\Interfaces\Cache {
+class Cache implements \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Common\Interfaces\Uninstall {
 
-	use \WP_Framework_Cache\Traits\Cache;
+	use \WP_Framework_Cache\Traits\Cache, \WP_Framework_Common\Traits\Uninstall;
 
 	/**
 	 * @var \WP_Framework_Cache\Interfaces\Cache $_cache
@@ -127,5 +127,19 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache {
 	 */
 	public function close() {
 		return $this->_cache->close();
+	}
+
+	/**
+	 * uninstall
+	 */
+	public function uninstall() {
+		$this->clear_cache();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_uninstall_priority() {
+		return 50;
 	}
 }
