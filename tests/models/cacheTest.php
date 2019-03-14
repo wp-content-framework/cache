@@ -1,8 +1,8 @@
 <?php
 /**
- * WP_Framework_Cache Models Validate Test
+ * WP_Framework_Cache Models Cache Test
  *
- * @version 0.0.25
+ * @version 0.0.3
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -12,12 +12,12 @@
 namespace WP_Framework_Cache\Tests\Models;
 
 /**
- * Class ValidateTest
+ * Class CacheTest
  * @package WP_Framework_Cache\Tests\Models
  * @group wp_framework
  * @group models
  */
-class ValidateTest extends \WP_Framework_Cache\Tests\TestCase {
+class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 
 	/**
 	 * @var \WP_Framework_Cache\Classes\Models\Cache\Option $_option
