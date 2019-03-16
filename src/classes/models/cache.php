@@ -32,11 +32,10 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Commo
 	 * initialized
 	 */
 	protected function initialized() {
-		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Kv';
-		if ( $this->apply_filters( 'cache_enabled' ) && $cache_type = $this->app->get_config( 'config', 'cache_type' ) ) {
+		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Option';
+		if ( $cache_type = $this->app->get_config( 'config', 'cache_type' ) ) {
 			if ( in_array( $cache_type, [
 				'option',
-				'kv',
 			] ) ) {
 				$cache_type  = strtolower( $cache_type );
 				$cache_class = "\WP_Framework_Cache\Classes\Models\Cache\\" . ucwords( $cache_type );
@@ -45,7 +44,7 @@ class Cache implements \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Commo
 			}
 
 			if ( ! class_exists( $cache_class ) || ! is_subclass_of( $cache_class, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
-				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Kv';
+				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Option';
 			}
 		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */

@@ -15,7 +15,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	// cache type (kv, option, class name)
+	// cache type (option, class name)
 	'cache_type' => 'option',
 
 ];
