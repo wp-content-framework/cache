@@ -21,12 +21,6 @@
 |---|---|
 |cache_type|キャッシュタイプ|
 
-- configs/setting.php  
-
-|設定値|説明|
-|---|---|
-|cache_enabled|キャッシュ機能が有効かどうか|
-
 # Author
 
 [GitHub (Technote)](https://github.com/technote-space)  
