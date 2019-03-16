@@ -35,7 +35,6 @@ class Package_Cache extends Package_Base {
 		return [
 			'config',
 			'filter',
-			'map',
 		];
 	}
 }
