@@ -19,7 +19,13 @@
 
 |設定値|説明|
 |---|---|
-|cache_type|キャッシュタイプ|
+|cache_type|キャッシュタイプ(settingよりも優先, defaultはなし)|
+
+- configs/settings.php  
+
+|設定値|説明|
+|---|---|
+|cache_type|キャッシュタイプ(option or file) \[default = option]|
 
 # Author
 
