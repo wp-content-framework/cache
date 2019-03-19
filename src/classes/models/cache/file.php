@@ -134,7 +134,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 					$expire > 0 ? time() + $expire : null,
 				] ), LOCK_EX );
 		if ( $result ) {
-			chmod( $path, 0660 );
+			chmod( $path, 0644 );
 		}
 
 		return $result;
