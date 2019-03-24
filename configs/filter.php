@@ -22,6 +22,9 @@ return [
 		'${prefix}app_deactivated' => [
 			'clear_cache',
 		],
+		'switch_blog'              => [
+			'switch_blog',
+		],
 	],
 
 ];
