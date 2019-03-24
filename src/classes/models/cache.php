@@ -55,7 +55,6 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	/**
 	 * clear cache
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function clear_cache() {
 		foreach ( $this->get_class_list() as $class ) {
 			/** @var \WP_Framework_Cache\Interfaces\Cache $class */
