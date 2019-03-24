@@ -67,9 +67,6 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	private function get_group_dir( $group, $common ) {
 		if ( ! isset( $this->_group_dir_cache[ $group ][ $common ] ) ) {
 			$this->_group_dir_cache[ $group ][ $common ] = $this->get_cache_root_dir( $common ) . urlencode( $group ) . DS;
-			if ( ! file_exists( $this->_group_dir_cache[ $group ][ $common ] ) ) {
-				@mkdir( $this->_group_dir_cache[ $group ][ $common ], 0744, true );
-			}
 		}
 
 		return $this->_group_dir_cache[ $group ][ $common ];
@@ -96,7 +93,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	private function exists_cache( $key, $group, $common ) {
 		$path = $this->get_cache_path( $key, $group, $common );
 
-		return is_readable( $path );
+		return $this->app->file->is_readable( $path );
 	}
 
 	/**
@@ -108,27 +105,27 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 */
 	private function read_cache( $key, $group, $common ) {
 		$path = $this->get_cache_path( $key, $group, $common );
-		if ( ! is_readable( $path ) ) {
+		if ( ! $this->app->file->is_readable( $path ) ) {
 			return [ false, null ];
 		}
 
-		$contents = @file_get_contents( $path, LOCK_EX );
+		$contents = $this->app->file->get_contents( $path );
 		if ( false === $contents ) {
-			@unlink( $path );
+			$this->app->file->delete( $path );
 
 			return [ false, null ];
 		}
 
 		$contents = substr( $contents, 7 );
 		if ( false === $contents ) {
-			@unlink( $path );
+			$this->app->file->delete( $path );
 
 			return [ false, null ];
 		}
 
 		$cache = @unserialize( $contents );
 		if ( ! is_array( $cache ) || count( $cache ) !== 2 ) {
-			@unlink( $path );
+			$this->app->file->delete( $path );
 
 			return [ false, null ];
 		}
@@ -136,7 +133,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 		list( $value, $time ) = $cache;
 		$is_valid = empty( $time ) || $time >= time();
 		if ( ! $is_valid ) {
-			@unlink( $path );
+			$this->app->file->delete( $path );
 		}
 
 		return [ $is_valid, $value ];
@@ -152,16 +149,10 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	private function write_cache( $key, $group, $common, $value, $expire ) {
-		$path   = $this->get_cache_path( $key, $group, $common );
-		$result = false !== @file_put_contents( $path, '<?php/*' . serialize( [
-					$value,
-					$expire > 0 ? time() + $expire : null,
-				] ), LOCK_EX );
-		if ( $result ) {
-			chmod( $path, 0644 );
-		}
-
-		return $result;
+		return $this->app->file->put_contents_recursive( $this->get_cache_path( $key, $group, $common ), '<?php/*' . serialize( [
+				$value,
+				$expire > 0 ? time() + $expire : null,
+			] ) );
 	}
 
 	/**
@@ -172,7 +163,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	private function delete_cache( $key, $group, $common ) {
-		return @unlink( $this->get_cache_path( $key, $group, $common ) );
+		return $this->app->file->delete( $this->get_cache_path( $key, $group, $common ) );
 	}
 
 	/**
