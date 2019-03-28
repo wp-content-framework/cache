@@ -52,8 +52,12 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 			return [ false, null ];
 		}
 		list( $value, $time ) = $cache;
+		$is_valid = empty( $time ) || $time >= time();
+		if ( ! $is_valid ) {
+			$this->delete( $key, $group, $common );
+		}
 
-		return [ empty( $time ) || $time >= time(), $value ];
+		return [ $is_valid, $value ];
 	}
 
 	/**
