@@ -79,7 +79,7 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|null $key
 	 * @param string $group
 	 * @param bool $common
 	 *
@@ -136,6 +136,16 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 	 */
 	public function delete( $key, $group = 'default', $common = false ) {
 		return $this->exists( $key, $group ) ? $this->delete_option( $key, $group, $common ) : false;
+	}
+
+	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return bool
+	 */
+	public function delete_group( $group, $common = false ) {
+		return $this->delete_option( null, $group, $common );
 	}
 
 	/**
