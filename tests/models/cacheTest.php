@@ -210,8 +210,112 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 			[ 'value2', 'test1', 'default', true, null ],
 			[ 'value1', 'test1', 'test_group', true, null ],
 			[ null, 'test1', 'test_group2', true, null ],
-			[ true, 'test2', 'default', true, true, 2 ],
+			[ true, 'test2', 'default', true, true ],
 			[ true, 'test3', 'default', true, true ],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_delete_provider
+	 * @depends      test_get2
+	 *
+	 * @param bool $expected
+	 * @param string $key
+	 * @param string $group
+	 * @param bool $common
+	 */
+	public function test_delete( $expected, $key, $group, $common ) {
+		$this->assertEquals( $expected, static::$_option->delete( $key, $group, $common ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_delete_provider() {
+		if ( is_multisite() ) {
+			return [
+				[ true, 'test1', 'test_group', false ],
+				[ false, 'test1', 'test_group', false ],
+				[ true, 'test1', 'test_group', true ],
+				[ false, 'test1', 'test_group', true ],
+			];
+		}
+
+		return [
+			[ true, 'test1', 'test_group', false ],
+			[ false, 'test1', 'test_group', false ],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_delete_group_provider
+	 * @depends      test_delete
+	 *
+	 * @param bool $expected
+	 * @param string $group
+	 * @param bool $common
+	 */
+	public function test_delete_group( $expected, $group, $common ) {
+		$this->assertEquals( $expected, static::$_option->delete_group( $group, $common ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_delete_group_provider() {
+		if ( is_multisite() ) {
+			return [
+				[ true, 'default', false ],
+				[ false, 'test_group', false ],
+				[ false, 'test_group2', false ],
+				[ false, 'default', false ],
+
+				[ true, 'default', true ],
+				[ false, 'test_group', true ],
+				[ false, 'test_group2', true ],
+				[ false, 'default', true ],
+			];
+		}
+
+		return [
+			[ true, 'default', false ],
+			[ false, 'test_group', false ],
+			[ false, 'test_group2', false ],
+			[ false, 'default', false ],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_exists3_provider
+	 * @depends      test_delete_group
+	 *
+	 * @param bool $expected
+	 * @param string $key
+	 * @param string $group
+	 * @param bool $common
+	 */
+	public function test_exists3( $expected, $key, $group, $common ) {
+		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_exists3_provider() {
+		return [
+			[ false, 'test1', 'default', false ],
+			[ false, 'test1', 'test_group', false ],
+			[ false, 'test1', 'test_group2', false ],
+			[ false, 'test2', 'default', false ],
+			[ false, 'test3', 'default', false ],
+			[ false, 'test4', 'default', false ],
+
+			[ false, 'test1', 'default', true ],
+			[ false, 'test1', 'test_group', true ],
+			[ false, 'test1', 'test_group2', true ],
+			[ false, 'test2', 'default', true ],
+			[ false, 'test3', 'default', true ],
+			[ false, 'test4', 'default', true ],
 		];
 	}
 }
