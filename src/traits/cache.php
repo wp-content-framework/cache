@@ -81,6 +81,14 @@ trait Cache {
 	public abstract function delete( $key, $group = 'default', $common = false );
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return bool
+	 */
+	public abstract function delete_group( $group, $common = false );
+
+	/**
 	 * @return bool
 	 */
 	public function flush() {

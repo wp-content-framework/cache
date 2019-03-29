@@ -123,6 +123,16 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	}
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return bool
+	 */
+	public function delete_group( $group, $common = false ) {
+		return $this->_cache->delete_group( $group, $common );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function flush() {

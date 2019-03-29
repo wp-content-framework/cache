@@ -72,6 +72,14 @@ interface Cache extends \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	public function delete( $key, $group = 'default', $common = false );
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return bool
+	 */
+	public function delete_group( $group, $common = false );
+
+	/**
 	 * @return bool
 	 */
 	public function flush();
