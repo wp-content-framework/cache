@@ -135,7 +135,7 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function delete( $key, $group = 'default', $common = false ) {
-		return $this->exists( $key, $group ) ? $this->delete_option( $key, $group, $common ) : false;
+		return $this->exists( $key, $group, $common ) ? $this->delete_option( $key, $group, $common ) : false;
 	}
 
 	/**
