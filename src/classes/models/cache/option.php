@@ -149,6 +149,16 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 	}
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return array
+	 */
+	public function get_cache_list( $group, $common = false ) {
+		return array_keys( $this->app->option->get_grouped( null, $this->get_cache_group( $group ), [], $common ) );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function flush() {

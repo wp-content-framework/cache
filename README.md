@@ -20,12 +20,15 @@
 |設定値|説明|
 |---|---|
 |cache_type|キャッシュタイプ(settingよりも優先, defaultはなし)|
+|delete_cache_group|削除を行うグループ|
+|delete_cache_common_group|削除を行うグループ(共通用)|
 
 - configs/settings.php  
 
 |設定値|説明|
 |---|---|
 |cache_type|キャッシュタイプ(option or file) \[default = option]|
+|delete_cache_interval|キャッシュ削除間隔を設定 \[default = 86400]|
 
 # Author
 

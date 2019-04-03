@@ -239,6 +239,22 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	}
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return array
+	 */
+	public function get_cache_list( $group, $common = false ) {
+		$dirlist = $this->app->file->dirlist( $this->get_group_dir( $group, $common ) );
+
+		return empty( $dirlist ) ? [] : $this->app->array->map( $this->app->array->filter( $dirlist, function ( $value ) {
+			return $this->app->string->ends_with( $value['name'], '.php' );
+		} ), function ( $item ) {
+			return substr( $item['name'], 0, - 4 );
+		} );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function flush() {
