@@ -44,7 +44,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return string
 	 */
 	private function get_cache_relative_dir( $common ) {
-		return 'cache' . DS . ( $common ? 'common' : $this->app->define->blog_id );
+		return 'cache' . DS . ( $common && is_multisite() ? 'common' : $this->app->define->blog_id );
 	}
 
 	/**
@@ -106,28 +106,28 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	private function read_cache( $key, $group, $common ) {
 		$path = $this->get_cache_path( $key, $group, $common );
 		if ( ! $this->app->file->is_readable( $path ) ) {
-			return [ false, null ];
+			return [ false, null, null ];
 		}
 
 		$contents = $this->app->file->get_contents( $path );
 		if ( false === $contents ) {
 			$this->app->file->delete( $path );
 
-			return [ false, null ];
+			return [ false, null, null ];
 		}
 
 		$contents = substr( $contents, 7 );
 		if ( false === $contents ) {
 			$this->app->file->delete( $path );
 
-			return [ false, null ];
+			return [ false, null, null ];
 		}
 
 		$cache = @unserialize( $contents );
 		if ( ! is_array( $cache ) || count( $cache ) !== 2 ) {
 			$this->app->file->delete( $path );
 
-			return [ false, null ];
+			return [ false, null, null ];
 		}
 
 		list( $value, $time ) = $cache;
@@ -136,7 +136,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 			$this->app->file->delete( $path );
 		}
 
-		return [ $is_valid, $value ];
+		return [ $is_valid, $value, $time ];
 	}
 
 	/**
@@ -144,14 +144,14 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @param string $group
 	 * @param bool $common
 	 * @param mixed $value
-	 * @param null|int $expire
+	 * @param null|int $time
 	 *
 	 * @return bool
 	 */
-	private function write_cache( $key, $group, $common, $value, $expire ) {
+	private function write_cache( $key, $group, $common, $value, $time ) {
 		return $this->app->file->put_contents_recursive( $this->get_cache_path( $key, $group, $common ), '<?php/*' . serialize( [
 				$value,
-				$expire > 0 ? time() + $expire : null,
+				$time,
 			] ) );
 	}
 
@@ -163,7 +163,13 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	private function delete_cache( $key, $group, $common ) {
-		return $this->app->file->delete( $this->get_cache_path( $key, $group, $common ) );
+		$path   = $this->get_cache_path( $key, $group, $common );
+		$return = $this->app->file->exists( $path ) && $this->app->file->delete( $path, ! isset( $key ) );
+		if ( $return && isset( $key ) && empty( $this->get_cache_list( $group, $common ) ) ) {
+			$this->app->file->delete( dirname( $path ) );
+		}
+
+		return $return;
 	}
 
 	/**
@@ -186,16 +192,24 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return mixed
 	 */
 	public function get( $key, $group = 'default', $common = false, $default = null ) {
-		return $this->app->array->get( $this->_cache, [ $group, $key, (int) $common ], function () use ( $key, $group, $common, $default ) {
-			list( $is_valid, $value ) = $this->read_cache( $key, $group, $common );
+		$cache = $this->app->array->get( $this->_cache, [ $group, $key, (int) $common ] );
+		if ( isset( $cache ) ) {
+			list( $value, $time ) = $cache;
+			$is_valid = empty( $time ) || $time >= time();
 			if ( $is_valid ) {
-				$this->_cache[ $group ][ $key ][ $common ] = $value;
+				return $value;
+			}
+			$this->delete( $key, $group, $common );
+		} else {
+			list( $is_valid, $value, $time ) = $this->read_cache( $key, $group, $common );
+			if ( $is_valid ) {
+				$this->_cache[ $group ][ $key ][ $common ] = [ $value, $time ];
 
 				return $value;
 			}
+		}
 
-			return $default;
-		} );
+		return $default;
 	}
 
 	/**
@@ -208,9 +222,10 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function set( $key, $value, $group = 'default', $common = false, $expire = null ) {
-		$this->_cache[ $group ][ $key ][ $common ] = $value;
+		$time                                      = $expire > 0 ? time() + $expire : null;
+		$this->_cache[ $group ][ $key ][ $common ] = [ $value, $time ];
 
-		return $this->write_cache( $key, $group, $common, $value, $expire );
+		return $this->write_cache( $key, $group, $common, $value, $time );
 	}
 
 	/**
