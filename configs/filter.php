@@ -16,14 +16,17 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 return [
 
 	'cache' => [
-		'${prefix}app_activated'   => [
+		'${prefix}app_activated'        => [
 			'clear_cache',
 		],
-		'${prefix}app_deactivated' => [
+		'${prefix}app_deactivated'      => [
 			'clear_cache',
 		],
-		'switch_blog'              => [
+		'switch_blog'                   => [
 			'switch_blog',
+		],
+		'${prefix}post_load_admin_page' => [
+			'setup_settings',
 		],
 	],
 

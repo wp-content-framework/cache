@@ -26,4 +26,16 @@ return [
 		],
 	],
 
+	'999' => [
+		'Others' => [
+			'10' => [
+				'delete_cache_interval' => [
+					'label'   => 'Delete cache interval',
+					'default' => DAY_IN_SECONDS,
+					'min'     => MINUTE_IN_SECONDS,
+				],
+			],
+		],
+	],
+
 ];
