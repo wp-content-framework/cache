@@ -177,7 +177,15 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function is_valid_cron_delete() {
-		return ! empty( $this->get_delete_cache_group() ) || ! empty( $this->get_delete_cache_common_group() );
+		$cache = $this->cache_get( 'is_valid_cron_delete' );
+		if ( isset( $cache ) ) {
+			return $cache;
+		}
+
+		$result = ! empty( $this->get_delete_cache_group() ) || ! empty( $this->get_delete_cache_common_group() );
+		$this->cache_set( 'is_valid_cron_delete', $result );
+
+		return $result;
 	}
 
 	/**
