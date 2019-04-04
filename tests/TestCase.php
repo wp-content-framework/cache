@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache TestCase
  *
- * @version 0.0.3
+ * @version 0.0.11
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -57,6 +57,8 @@ class TestCase extends \PHPUnit\Framework\TestCase {
 		\Phake::when( static::$app )->__get( 'array' )->thenReturn( \WP_Framework_Common\Classes\Models\Array_Utility::get_instance( static::$app ) );
 		\Phake::when( static::$app )->__get( 'user' )->thenReturn( \WP_Framework_Common\Classes\Models\User::get_instance( static::$app ) );
 		\Phake::when( static::$app )->__get( 'option' )->thenReturn( \WP_Framework_Common\Classes\Models\Option::get_instance( static::$app ) );
+		\Phake::when( static::$app )->__get( 'file' )->thenReturn( \WP_Framework_Common\Classes\Models\File_Utility::get_instance( static::$app ) );
+		\Phake::when( static::$app )->__get( 'string' )->thenReturn( \WP_Framework_Common\Classes\Models\String_Utility::get_instance( static::$app ) );
 	}
 
 	public static function tearDownAfterClass() {

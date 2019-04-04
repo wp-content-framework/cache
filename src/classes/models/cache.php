@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.10
+ * @version 0.0.11
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -50,6 +50,16 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
+	}
+
+	/**
+	 * setup settings
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function setup_settings() {
+		if ( ! $this->is_valid_cron_delete() ) {
+			$this->app->setting->remove_setting( 'delete_cache_interval' );
+		}
 	}
 
 	/**
@@ -133,6 +143,16 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	}
 
 	/**
+	 * @param string $group
+	 * @param bool $common
+	 *
+	 * @return array
+	 */
+	public function get_cache_list( $group, $common = false ) {
+		return $this->_cache->get_cache_list( $group, $common );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function flush() {
@@ -151,6 +171,61 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 */
 	public function switch_blog() {
 		$this->_cache->switch_blog();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_valid_cron_delete() {
+		$cache = $this->cache_get( 'is_valid_cron_delete' );
+		if ( isset( $cache ) ) {
+			return $cache;
+		}
+
+		$result = ! empty( $this->get_delete_cache_group() ) || ! empty( $this->get_delete_cache_common_group() );
+		$this->cache_set( 'is_valid_cron_delete', $result );
+
+		return $result;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_delete_cache_group() {
+		return $this->app->array->to_array( $this->app->get_config( 'config', 'delete_cache_group' ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_delete_cache_common_group() {
+		return $this->app->array->to_array( $this->app->get_config( 'config', 'delete_cache_common_group' ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function delete_expired_cache() {
+		$count   = 0;
+		$deleted = 0;
+		$default = '___check_deleted___' . $this->app->utility->uuid();
+		foreach ( $this->get_delete_cache_group() as $group ) {
+			foreach ( $this->get_cache_list( $group, false ) as $key ) {
+				$default === $this->_cache->get( $key, $group, false, $default ) and $deleted ++;
+				$count ++;
+			}
+		}
+		foreach ( $this->get_delete_cache_common_group() as $group ) {
+			foreach ( $this->get_cache_list( $group, true ) as $key ) {
+				$default === $this->_cache->get( $key, $group, true, $default ) and $deleted ++;
+				$count ++;
+			}
+		}
+
+		return [
+			'total'   => $count,
+			'deleted' => $deleted,
+		];
 	}
 
 	/**

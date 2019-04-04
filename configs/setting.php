@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Configs Setting
  *
- * @version 0.0.7
+ * @version 0.0.11
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -21,6 +21,18 @@ return [
 				'cache_type' => [
 					'label'   => 'Cache type (option or file)',
 					'default' => 'option',
+				],
+			],
+		],
+	],
+
+	'999' => [
+		'Others' => [
+			'10' => [
+				'delete_cache_interval' => [
+					'label'   => 'Delete cache interval',
+					'default' => DAY_IN_SECONDS,
+					'min'     => MINUTE_IN_SECONDS,
 				],
 			],
 		],

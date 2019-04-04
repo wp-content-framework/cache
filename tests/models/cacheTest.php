@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Models Cache Test
  *
- * @version 0.0.10
+ * @version 0.0.11
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -24,9 +24,21 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	private static $_option;
 
+	/**
+	 * @var \WP_Framework_Cache\Classes\Models\Cache\File $_file
+	 */
+	private static $_file;
+
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
 		static::$_option = \WP_Framework_Cache\Classes\Models\Cache\Option::get_instance( static::$app );
+		static::$_file   = \WP_Framework_Cache\Classes\Models\Cache\File::get_instance( static::$app );
+	}
+
+	public static function tearDownAfterClass() {
+		parent::tearDownAfterClass();
+		static::$_option->flush();
+		static::$_file->flush();
 	}
 
 	/**
@@ -39,6 +51,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_exists1( $expected, $key, $group, $common ) {
 		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
 	}
 
 	/**
@@ -65,6 +78,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_get1( $expected, $key, $group, $common, $default ) {
 		$this->assertEquals( $expected, static::$_option->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$_file->get( $key, $group, $common, $default ) );
 	}
 
 	/**
@@ -98,6 +112,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_set( $expected, $key, $value, $group, $common, $expire ) {
 		$this->assertEquals( $expected, static::$_option->set( $key, $value, $group, $common, $expire ) );
+		$this->assertEquals( $expected, static::$_file->set( $key, $value, $group, $common, $expire ) );
 	}
 
 	/**
@@ -107,18 +122,14 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 		if ( is_multisite() ) {
 			return [
 				[ true, 'test1', 'value1', 'default', false, null ],
-				[ false, 'test1', 'value1', 'default', false, null ],
 				[ true, 'test1', 'value2', 'default', false, null ],
 				[ true, 'test1', 'value1', 'test_group', false, null ],
-				[ false, 'test1', 'value1', 'test_group', false, null ],
 				[ true, 'test2', 'value2', 'default', false, 1 ],
 				[ true, 'test3', 'value3', 'default', false, 3 ],
 
 				[ true, 'test1', 'value1', 'default', true, null ],
-				[ false, 'test1', 'value1', 'default', true, null ],
 				[ true, 'test1', 'value2', 'default', true, null ],
 				[ true, 'test1', 'value1', 'test_group', true, null ],
-				[ false, 'test1', 'value1', 'test_group', true, null ],
 				[ true, 'test2', 'value2', 'default', true, 1 ],
 				[ true, 'test3', 'value3', 'default', true, 3 ],
 			];
@@ -126,17 +137,10 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 
 		return [
 			[ true, 'test1', 'value1', 'default', false, null ],
-			[ false, 'test1', 'value1', 'default', false, null ],
 			[ true, 'test1', 'value2', 'default', false, null ],
 			[ true, 'test1', 'value1', 'test_group', false, null ],
-			[ false, 'test1', 'value1', 'test_group', false, null ],
 			[ true, 'test2', 'value2', 'default', false, 1 ],
 			[ true, 'test3', 'value3', 'default', false, 3 ],
-
-			[ false, 'test1', 'value2', 'default', true, null ],
-			[ false, 'test1', 'value1', 'test_group', true, null ],
-			[ false, 'test2', 'value2', 'default', true, 1 ],
-			[ false, 'test3', 'value3', 'default', true, 3 ],
 		];
 	}
 
@@ -151,6 +155,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_exists2( $expected, $key, $group, $common ) {
 		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
 	}
 
 	/**
@@ -190,6 +195,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 			sleep( $sleep );
 		}
 		$this->assertEquals( $expected, static::$_option->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$_file->get( $key, $group, $common, $default ) );
 	}
 
 	/**
@@ -226,6 +232,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_delete( $expected, $key, $group, $common ) {
 		$this->assertEquals( $expected, static::$_option->delete( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$_file->delete( $key, $group, $common ) );
 	}
 
 	/**
@@ -257,6 +264,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_delete_group( $expected, $group, $common ) {
 		$this->assertEquals( $expected, static::$_option->delete_group( $group, $common ) );
+		$this->assertEquals( $expected, static::$_file->delete_group( $group, $common ) );
 	}
 
 	/**
@@ -296,6 +304,7 @@ class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
 	 */
 	public function test_exists3( $expected, $key, $group, $common ) {
 		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
 	}
 
 	/**
