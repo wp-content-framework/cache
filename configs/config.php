@@ -15,9 +15,6 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	// cache type
-	'cache_type'                => null,
-
 	// delete cache group
 	'delete_cache_group'        => [],
 
