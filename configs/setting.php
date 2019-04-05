@@ -20,7 +20,10 @@ return [
 			'100' => [
 				'cache_type' => [
 					'label'   => 'Cache type (option or file)',
-					'default' => 'option',
+					'default' => function ( $app ) {
+						/** @var \WP_Framework $app */
+						return ! defined( 'WP_FRAMEWORK_FORCE_CACHE' ) && $app->utility->definedv( 'WP_DEBUG' ) ? '\WP_Framework_Cache\Classes\Models\Cache\None' : 'option';
+					},
 				],
 			],
 		],
