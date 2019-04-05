@@ -14,6 +14,10 @@
 
 ``` composer require wp-content-framework/cache ```  
 
+## 関連モジュール
+* [cron](https://github.com/wp-content-framework/cron)  
+  * 期限切れのキャッシュを定期的に削除する場合はインストールが必要です。
+
 ## 基本設定
 - configs/config.php  
 

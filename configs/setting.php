@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Cache Configs Setting
  *
- * @version 0.0.11
+ * @version 0.0.12
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -20,7 +20,10 @@ return [
 			'100' => [
 				'cache_type' => [
 					'label'   => 'Cache type (option or file)',
-					'default' => 'option',
+					'default' => function ( $app ) {
+						/** @var \WP_Framework $app */
+						return ! $app->utility->defined( 'WP_FRAMEWORK_FORCE_CACHE' ) && $app->utility->defined( 'WP_DEBUG' ) ? '\WP_Framework_Cache\Classes\Models\Cache\None' : 'option';
+					},
 				],
 			],
 		],
