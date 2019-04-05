@@ -32,21 +32,18 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * initialized
 	 */
 	protected function initialized() {
+		if ( ! defined( 'WP_FRAMEWORK_FORCE_CACHE' ) && defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$this->app->setting->edit_setting( 'cache_type', 'default', '\WP_Framework_Cache\Classes\Models\Cache\None' );
+		}
+
 		$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Option';
-		$cache_type  = $this->app->get_config( 'config', 'cache_type' );
-		if ( $cache_type ) {
-			if ( 'option' !== $cache_type ) {
-				if ( 'file' === $cache_type ) {
-					$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\File';
-				} else {
-					$cache_class = $cache_type;
-					if ( ! class_exists( $cache_class ) || ! is_subclass_of( $cache_class, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
-						$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\Option';
-					}
-				}
+		$cache_type  = $this->app->get_config( 'config', 'cache_type', $this->apply_filters( 'cache_type' ) );
+		if ( 'option' !== $cache_type ) {
+			if ( 'file' === $cache_type ) {
+				$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\File';
+			} elseif ( class_exists( $cache_type ) && is_subclass_of( $cache_type, '\WP_Framework_Cache\Interfaces\Cache' ) ) {
+				$cache_class = $cache_type;
 			}
-		} elseif ( 'file' === $this->apply_filters( 'cache_type' ) ) {
-			$cache_class = '\WP_Framework_Cache\Classes\Models\Cache\File';
 		}
 		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
