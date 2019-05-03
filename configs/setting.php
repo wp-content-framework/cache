@@ -21,7 +21,7 @@ return [
 				'cache_type' => [
 					'label'   => 'Cache type (option or file)',
 					'default' => function ( $app ) {
-						/** @var \WP_Framework $app */
+						/** @var WP_Framework $app */
 						return ! $app->utility->defined( 'WP_FRAMEWORK_FORCE_CACHE' ) && $app->utility->defined( 'WP_DEBUG' ) ? '\WP_Framework_Cache\Classes\Models\Cache\None' : 'option';
 					},
 				],

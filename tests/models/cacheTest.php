@@ -11,28 +11,32 @@
 
 namespace WP_Framework_Cache\Tests\Models;
 
+use WP_Framework_Cache\Classes\Models\Cache\File;
+use WP_Framework_Cache\Classes\Models\Cache\Option;
+use WP_Framework_Cache\Tests\TestCase;
+
 /**
  * Class CacheTest
  * @package WP_Framework_Cache\Tests\Models
  * @group wp_framework
  * @group models
  */
-class CacheTest extends \WP_Framework_Cache\Tests\TestCase {
+class CacheTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Cache\Classes\Models\Cache\Option $_option
+	 * @var Option $_option
 	 */
 	private static $_option;
 
 	/**
-	 * @var \WP_Framework_Cache\Classes\Models\Cache\File $_file
+	 * @var File $_file
 	 */
 	private static $_file;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_option = \WP_Framework_Cache\Classes\Models\Cache\Option::get_instance( static::$app );
-		static::$_file   = \WP_Framework_Cache\Classes\Models\Cache\File::get_instance( static::$app );
+		static::$_option = Option::get_instance( static::$app );
+		static::$_file   = File::get_instance( static::$app );
 	}
 
 	public static function tearDownAfterClass() {

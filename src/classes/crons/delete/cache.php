@@ -11,6 +11,8 @@
 
 namespace WP_Framework_Cache\Classes\Crons\Delete;
 
+use WP_Framework_Cron\Classes\Crons\Base;
+
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
 }
@@ -19,7 +21,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Cache
  * @package WP_Framework_Cache\Classes\Crons\Delete
  */
-class Cache extends \WP_Framework_Cron\Classes\Crons\Base {
+class Cache extends Base {
 
 	/**
 	 * @return int

@@ -11,6 +11,9 @@
 
 namespace WP_Framework_Cache\Interfaces;
 
+use WP_Framework_Core\Interfaces\Hook;
+use WP_Framework_Core\Interfaces\Singleton;
+
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
 }
@@ -19,7 +22,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Interface Cache
  * @package WP_Framework_Cache\Interfaces
  */
-interface Cache extends \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Core\Interfaces\Hook {
+interface Cache extends Singleton, Hook {
 
 	/**
 	 * @param string $key

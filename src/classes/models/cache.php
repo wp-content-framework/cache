@@ -11,6 +11,10 @@
 
 namespace WP_Framework_Cache\Classes\Models;
 
+use WP_Framework_Common\Traits\Uninstall;
+use WP_Framework_Core\Traits\Loader;
+use WP_Framework_Core\Traits\Singleton;
+
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
 }
@@ -21,7 +25,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  */
 class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache\Interfaces\Cache, \WP_Framework_Common\Interfaces\Uninstall {
 
-	use \WP_Framework_Core\Traits\Loader, \WP_Framework_Cache\Traits\Cache, \WP_Framework_Common\Traits\Uninstall;
+	use Loader, \WP_Framework_Cache\Traits\Cache, Uninstall;
 
 	/**
 	 * @var \WP_Framework_Cache\Interfaces\Cache $_cache
@@ -41,7 +45,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 				$cache_class = $cache_type;
 			}
 		}
-		/** @var \WP_Framework_Core\Traits\Singleton $cache_class */
+		/** @var Singleton $cache_class */
 		$this->_cache = $cache_class::get_instance( $this->app );
 	}
 
