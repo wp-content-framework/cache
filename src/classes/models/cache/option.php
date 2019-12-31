@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Cache Classes Models Cache Option
  *
- * @version 0.0.13
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -55,7 +54,9 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 		if ( empty( $cache ) || ! is_array( $cache ) || count( $cache ) !== 2 ) {
 			return [ false, null ];
 		}
+
 		list( $value, $time ) = $cache;
+
 		$is_valid = empty( $time ) || $time >= time();
 		if ( ! $is_valid ) {
 			$this->delete( $key, $group, $common );

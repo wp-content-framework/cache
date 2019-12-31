@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Cache Traits Cache
  *
- * @version 0.0.13
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -33,7 +32,7 @@ trait Cache {
 	 *
 	 * @return bool
 	 */
-	public abstract function exists( $key, $group = 'default', $common = false );
+	abstract public function exists( $key, $group = 'default', $common = false );
 
 	/**
 	 * @param string $key
@@ -43,7 +42,7 @@ trait Cache {
 	 *
 	 * @return mixed
 	 */
-	public abstract function get( $key, $group = 'default', $common = false, $default = null );
+	abstract public function get( $key, $group = 'default', $common = false, $default = null );
 
 	/**
 	 * @param string $key
@@ -54,7 +53,7 @@ trait Cache {
 	 *
 	 * @return bool
 	 */
-	public abstract function set( $key, $value, $group = 'default', $common = false, $expire = null );
+	abstract public function set( $key, $value, $group = 'default', $common = false, $expire = null );
 
 	/**
 	 * @param string $key
@@ -80,7 +79,7 @@ trait Cache {
 	 *
 	 * @return bool
 	 */
-	public abstract function delete( $key, $group = 'default', $common = false );
+	abstract public function delete( $key, $group = 'default', $common = false );
 
 	/**
 	 * @param string $group
@@ -88,7 +87,7 @@ trait Cache {
 	 *
 	 * @return bool
 	 */
-	public abstract function delete_group( $group, $common = false );
+	abstract public function delete_group( $group, $common = false );
 
 	/**
 	 * @param string $group
@@ -96,7 +95,7 @@ trait Cache {
 	 *
 	 * @return array
 	 */
-	public abstract function get_cache_list( $group, $common = false );
+	abstract public function get_cache_list( $group, $common = false );
 
 	/**
 	 * @return bool
@@ -116,6 +115,5 @@ trait Cache {
 	 * switch blog
 	 */
 	public function switch_blog() {
-
 	}
 }

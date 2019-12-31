@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Cache Classes Models Cache
  *
- * @version 0.0.13
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -28,9 +27,9 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	use Loader, \WP_Framework_Cache\Traits\Cache, Uninstall;
 
 	/**
-	 * @var \WP_Framework_Cache\Interfaces\Cache $_cache
+	 * @var \WP_Framework_Cache\Interfaces\Cache $cache
 	 */
-	private $_cache;
+	private $cache;
 
 	/**
 	 * initialized
@@ -46,13 +45,14 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 			}
 		}
 		/** @var Singleton $cache_class */
-		$this->_cache = $cache_class::get_instance( $this->app );
+		$this->cache = $cache_class::get_instance( $this->app );
 	}
 
 	/**
 	 * setup settings
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function setup_settings() {
 		if ( ! $this->is_valid_cron_delete() ) {
 			$this->app->setting->remove_setting( 'delete_cache_interval' );
@@ -77,7 +77,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function exists( $key, $group = 'default', $common = false ) {
-		return $this->_cache->exists( $key, $group, $common );
+		return $this->cache->exists( $key, $group, $common );
 	}
 
 	/**
@@ -89,7 +89,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return mixed
 	 */
 	public function get( $key, $group = 'default', $common = false, $default = null ) {
-		return $this->_cache->get( $key, $group, $common, $default );
+		return $this->cache->get( $key, $group, $common, $default );
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function set( $key, $value, $group = 'default', $common = false, $expire = null ) {
-		return $this->_cache->set( $key, $value, $group, $common, $expire );
+		return $this->cache->set( $key, $value, $group, $common, $expire );
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function replace( $key, $value, $group = 'default', $common = false, $expire = null ) {
-		return $this->_cache->replace( $key, $value, $group, $common, $expire );
+		return $this->cache->replace( $key, $value, $group, $common, $expire );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function delete( $key, $group = 'default', $common = false ) {
-		return $this->_cache->delete( $key, $group, $common );
+		return $this->cache->delete( $key, $group, $common );
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function delete_group( $group, $common = false ) {
-		return $this->_cache->delete_group( $group, $common );
+		return $this->cache->delete_group( $group, $common );
 	}
 
 	/**
@@ -146,28 +146,28 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return array
 	 */
 	public function get_cache_list( $group, $common = false ) {
-		return $this->_cache->get_cache_list( $group, $common );
+		return $this->cache->get_cache_list( $group, $common );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function flush() {
-		return $this->_cache->flush();
+		return $this->cache->flush();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function close() {
-		return $this->_cache->close();
+		return $this->cache->close();
 	}
 
 	/**
 	 * switch blog
 	 */
 	public function switch_blog() {
-		$this->_cache->switch_blog();
+		$this->cache->switch_blog();
 	}
 
 	/**
@@ -212,14 +212,18 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 		$default = '___check_deleted___' . $this->app->utility->uuid();
 		foreach ( $this->get_delete_cache_group() as $group ) {
 			foreach ( $this->get_cache_list( $group, false ) as $key ) {
-				$default === $this->_cache->get( $key, $group, false, $default ) and $deleted ++;
-				$count ++;
+				if ( $default === $this->cache->get( $key, $group, false, $default ) ) {
+					$deleted++;
+				}
+				$count++;
 			}
 		}
 		foreach ( $this->get_delete_cache_common_group() as $group ) {
 			foreach ( $this->get_cache_list( $group, true ) as $key ) {
-				$default === $this->_cache->get( $key, $group, true, $default ) and $deleted ++;
-				$count ++;
+				if ( $default === $this->cache->get( $key, $group, true, $default ) ) {
+					$deleted++;
+				}
+				$count++;
 			}
 		}
 

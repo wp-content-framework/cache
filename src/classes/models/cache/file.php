@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Cache Classes Models Cache File
  *
- * @version 0.0.13
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -28,19 +27,19 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	use Singleton, Hook, Cache;
 
 	/**
-	 * @var string[] $_dir
+	 * @var string[] $dir
 	 */
-	private $_dir = [];
+	private $dir = [];
 
 	/**
-	 * @var string[][] $_group_dir_cache
+	 * @var string[][] $group_dir_cache
 	 */
-	private $_group_dir_cache = [];
+	private $group_dir_cache = [];
 
 	/**
-	 * @var array $_cache
+	 * @var array $cache
 	 */
-	private $_cache = [];
+	private $cache = [];
 
 	/**
 	 * @param bool $common
@@ -57,9 +56,11 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return string
 	 */
 	private function get_cache_root_dir( $common ) {
-		! isset( $this->_dir[ $common ] ) and $this->_dir[ $common ] = $this->app->define->plugin_dir . DS . $this->get_cache_relative_dir( $common ) . DS;
+		if ( ! isset( $this->dir[ $common ] ) ) {
+			$this->dir[ $common ] = $this->app->define->plugin_dir . DS . $this->get_cache_relative_dir( $common ) . DS;
+		}
 
-		return $this->_dir[ $common ];
+		return $this->dir[ $common ];
 	}
 
 	/**
@@ -69,11 +70,11 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return string
 	 */
 	private function get_group_dir( $group, $common ) {
-		if ( ! isset( $this->_group_dir_cache[ $group ][ $common ] ) ) {
-			$this->_group_dir_cache[ $group ][ $common ] = $this->get_cache_root_dir( $common ) . urlencode( $group ) . DS;
+		if ( ! isset( $this->group_dir_cache[ $group ][ $common ] ) ) {
+			$this->group_dir_cache[ $group ][ $common ] = $this->get_cache_root_dir( $common ) . rawurlencode( $group ) . DS;
 		}
 
-		return $this->_group_dir_cache[ $group ][ $common ];
+		return $this->group_dir_cache[ $group ][ $common ];
 	}
 
 	/**
@@ -84,7 +85,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return string
 	 */
 	private function get_cache_path( $key, $group, $common ) {
-		return $this->get_group_dir( $group, $common ) . ( isset( $key ) ? urlencode( $key ) . '.php' : '' );
+		return $this->get_group_dir( $group, $common ) . ( isset( $key ) ? rawurlencode( $key ) . '.php' : '' );
 	}
 
 	/**
@@ -127,7 +128,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 			return [ false, null, null ];
 		}
 
-		$cache = @unserialize( $contents );
+		$cache = @unserialize( $contents ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize,WordPress.PHP.NoSilencedErrors.Discouraged
 		if ( ! is_array( $cache ) || count( $cache ) !== 2 ) {
 			$this->app->file->delete( $path );
 
@@ -135,6 +136,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 		}
 
 		list( $value, $time ) = $cache;
+
 		$is_valid = empty( $time ) || $time >= time();
 		if ( ! $is_valid ) {
 			$this->app->file->delete( $path );
@@ -153,10 +155,13 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	private function write_cache( $key, $group, $common, $value, $time ) {
-		return $this->app->file->put_contents_recursive( $this->get_cache_path( $key, $group, $common ), '<?php/*' . serialize( [
+		return $this->app->file->put_contents_recursive(
+			$this->get_cache_path( $key, $group, $common ),
+			'<?php/*' . serialize( [ // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 				$value,
 				$time,
-			] ) );
+			] )
+		);
 	}
 
 	/**
@@ -184,7 +189,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function exists( $key, $group = 'default', $common = false ) {
-		return $this->app->array->exists( $this->_cache, [ $group, $key, (int) $common ] ) || $this->exists_cache( $key, $group, $common );
+		return $this->app->array->exists( $this->cache, [ $group, $key, (int) $common ] ) || $this->exists_cache( $key, $group, $common );
 	}
 
 	/**
@@ -196,9 +201,10 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return mixed
 	 */
 	public function get( $key, $group = 'default', $common = false, $default = null ) {
-		$cache = $this->app->array->get( $this->_cache, [ $group, $key, (int) $common ] );
+		$cache = $this->app->array->get( $this->cache, [ $group, $key, (int) $common ] );
 		if ( isset( $cache ) ) {
 			list( $value, $time ) = $cache;
+
 			$is_valid = empty( $time ) || $time >= time();
 			if ( $is_valid ) {
 				return $value;
@@ -207,7 +213,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 		} else {
 			list( $is_valid, $value, $time ) = $this->read_cache( $key, $group, $common );
 			if ( $is_valid ) {
-				$this->_cache[ $group ][ $key ][ $common ] = [ $value, $time ];
+				$this->cache[ $group ][ $key ][ $common ] = [ $value, $time ];
 
 				return $value;
 			}
@@ -226,8 +232,8 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function set( $key, $value, $group = 'default', $common = false, $expire = null ) {
-		$time                                      = $expire > 0 ? time() + $expire : null;
-		$this->_cache[ $group ][ $key ][ $common ] = [ $value, $time ];
+		$time                                     = $expire > 0 ? time() + $expire : null;
+		$this->cache[ $group ][ $key ][ $common ] = [ $value, $time ];
 
 		return $this->write_cache( $key, $group, $common, $value, $time );
 	}
@@ -240,7 +246,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function delete( $key, $group = 'default', $common = false ) {
-		unset( $this->_cache[ $group ][ $key ][ $common ] );
+		unset( $this->cache[ $group ][ $key ][ $common ] );
 
 		return $this->delete_cache( $key, $group, $common );
 	}
@@ -252,7 +258,7 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * @return bool
 	 */
 	public function delete_group( $group, $common = false ) {
-		unset( $this->_cache[ $group ] );
+		unset( $this->cache[ $group ] );
 
 		return $this->delete_cache( null, $group, $common );
 	}
@@ -266,18 +272,21 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	public function get_cache_list( $group, $common = false ) {
 		$dirlist = $this->app->file->dirlist( $this->get_group_dir( $group, $common ) );
 
-		return empty( $dirlist ) ? [] : $this->app->array->map( $this->app->array->filter( $dirlist, function ( $value ) {
-			return $this->app->string->ends_with( $value['name'], '.php' );
-		} ), function ( $item ) {
-			return substr( $item['name'], 0, - 4 );
-		} );
+		return empty( $dirlist ) ? [] : $this->app->array->map(
+			$this->app->array->filter( $dirlist, function ( $value ) {
+				return $this->app->string->ends_with( $value['name'], '.php' );
+			} ),
+			function ( $item ) {
+				return substr( $item['name'], 0, -4 );
+			}
+		);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function flush() {
-		$this->_cache = [];
+		$this->cache = [];
 		$this->app->file->delete_plugin_dir( $this->app, $this->get_cache_relative_dir( false ) );
 		$this->app->file->delete_plugin_dir( $this->app, $this->get_cache_relative_dir( true ) );
 
@@ -288,8 +297,8 @@ class File implements \WP_Framework_Cache\Interfaces\Cache {
 	 * switch blog
 	 */
 	public function switch_blog() {
-		$this->_dir             = null;
-		$this->_group_dir_cache = [];
-		$this->_cache           = [];
+		$this->dir             = null;
+		$this->group_dir_cache = [];
+		$this->cache           = [];
 	}
 }
