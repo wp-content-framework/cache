@@ -23,29 +23,29 @@ use WP_Framework_Cache\Tests\TestCase;
 class CacheTest extends TestCase {
 
 	/**
-	 * @var Option $_option
+	 * @var Option $option
 	 */
-	private static $_option;
+	private static $option;
 
 	/**
-	 * @var File $_file
+	 * @var File $file
 	 */
-	private static $_file;
+	private static $file;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_option = Option::get_instance( static::$app );
-		static::$_file   = File::get_instance( static::$app );
+		static::$option = Option::get_instance( static::$app );
+		static::$file   = File::get_instance( static::$app );
 	}
 
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
-		static::$_option->flush();
-		static::$_file->flush();
+		static::$option->flush();
+		static::$file->flush();
 	}
 
 	/**
-	 * @dataProvider _test_exists1_provider
+	 * @dataProvider provider_test_exists1
 	 *
 	 * @param bool $expected
 	 * @param string $key
@@ -53,14 +53,14 @@ class CacheTest extends TestCase {
 	 * @param bool $common
 	 */
 	public function test_exists1( $expected, $key, $group, $common ) {
-		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
-		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$file->exists( $key, $group, $common ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_exists1_provider() {
+	public function provider_test_exists1() {
 		return [
 			[ false, 'test1', 'default', false ],
 			[ false, 'test2', 'test_group', false ],
@@ -71,7 +71,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_get1_provider
+	 * @dataProvider provider_test_get1
 	 *
 	 * @param mixed $expected
 	 * @param string $key
@@ -80,14 +80,14 @@ class CacheTest extends TestCase {
 	 * @param mixed $default
 	 */
 	public function test_get1( $expected, $key, $group, $common, $default ) {
-		$this->assertEquals( $expected, static::$_option->get( $key, $group, $common, $default ) );
-		$this->assertEquals( $expected, static::$_file->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$option->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$file->get( $key, $group, $common, $default ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_get1_provider() {
+	public function provider_test_get1() {
 		return [
 			[ null, 'test1', 'default', false, null ],
 			[ false, 'test2', 'test_group1', false, false ],
@@ -104,7 +104,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_set_provider
+	 * @dataProvider provider_test_set
 	 *
 	 * @param bool $expected
 	 * @param string $key
@@ -114,14 +114,14 @@ class CacheTest extends TestCase {
 	 * @param null|int $expire
 	 */
 	public function test_set( $expected, $key, $value, $group, $common, $expire ) {
-		$this->assertEquals( $expected, static::$_option->set( $key, $value, $group, $common, $expire ) );
-		$this->assertEquals( $expected, static::$_file->set( $key, $value, $group, $common, $expire ) );
+		$this->assertEquals( $expected, static::$option->set( $key, $value, $group, $common, $expire ) );
+		$this->assertEquals( $expected, static::$file->set( $key, $value, $group, $common, $expire ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_set_provider() {
+	public function provider_test_set() {
 		if ( is_multisite() ) {
 			return [
 				[ true, 'test1', 'value1', 'default', false, null ],
@@ -148,7 +148,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_exists2_provider
+	 * @dataProvider provider_test_exists2
 	 * @depends      test_set
 	 *
 	 * @param bool $expected
@@ -157,14 +157,14 @@ class CacheTest extends TestCase {
 	 * @param bool $common
 	 */
 	public function test_exists2( $expected, $key, $group, $common ) {
-		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
-		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$file->exists( $key, $group, $common ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_exists2_provider() {
+	public function provider_test_exists2() {
 		return [
 			[ true, 'test1', 'default', false ],
 			[ true, 'test1', 'test_group', false ],
@@ -183,7 +183,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_get2_provider
+	 * @dataProvider provider_test_get2
 	 * @depends      test_exists2
 	 *
 	 * @param mixed $expected
@@ -197,14 +197,14 @@ class CacheTest extends TestCase {
 		if ( $sleep > 0 ) {
 			sleep( $sleep );
 		}
-		$this->assertEquals( $expected, static::$_option->get( $key, $group, $common, $default ) );
-		$this->assertEquals( $expected, static::$_file->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$option->get( $key, $group, $common, $default ) );
+		$this->assertEquals( $expected, static::$file->get( $key, $group, $common, $default ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_get2_provider() {
+	public function provider_test_get2() {
 		return [
 			[ 'value2', 'test1', 'default', false, null ],
 			[ 'value1', 'test1', 'test_group', false, null ],
@@ -225,7 +225,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_delete_provider
+	 * @dataProvider provider_test_delete
 	 * @depends      test_get2
 	 *
 	 * @param bool $expected
@@ -234,14 +234,14 @@ class CacheTest extends TestCase {
 	 * @param bool $common
 	 */
 	public function test_delete( $expected, $key, $group, $common ) {
-		$this->assertEquals( $expected, static::$_option->delete( $key, $group, $common ) );
-		$this->assertEquals( $expected, static::$_file->delete( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$option->delete( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$file->delete( $key, $group, $common ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_delete_provider() {
+	public function provider_test_delete() {
 		if ( is_multisite() ) {
 			return [
 				[ true, 'test1', 'test_group', false ],
@@ -258,7 +258,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_delete_group_provider
+	 * @dataProvider provider_test_delete_group
 	 * @depends      test_delete
 	 *
 	 * @param bool $expected
@@ -266,14 +266,14 @@ class CacheTest extends TestCase {
 	 * @param bool $common
 	 */
 	public function test_delete_group( $expected, $group, $common ) {
-		$this->assertEquals( $expected, static::$_option->delete_group( $group, $common ) );
-		$this->assertEquals( $expected, static::$_file->delete_group( $group, $common ) );
+		$this->assertEquals( $expected, static::$option->delete_group( $group, $common ) );
+		$this->assertEquals( $expected, static::$file->delete_group( $group, $common ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_delete_group_provider() {
+	public function provider_test_delete_group() {
 		if ( is_multisite() ) {
 			return [
 				[ true, 'default', false ],
@@ -297,7 +297,7 @@ class CacheTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_exists3_provider
+	 * @dataProvider provider_test_exists3
 	 * @depends      test_delete_group
 	 *
 	 * @param bool $expected
@@ -306,14 +306,14 @@ class CacheTest extends TestCase {
 	 * @param bool $common
 	 */
 	public function test_exists3( $expected, $key, $group, $common ) {
-		$this->assertEquals( $expected, static::$_option->exists( $key, $group, $common ) );
-		$this->assertEquals( $expected, static::$_file->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$option->exists( $key, $group, $common ) );
+		$this->assertEquals( $expected, static::$file->exists( $key, $group, $common ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_exists3_provider() {
+	public function provider_test_exists3() {
 		return [
 			[ false, 'test1', 'default', false ],
 			[ false, 'test1', 'test_group', false ],

@@ -115,7 +115,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function replace( $key, $value, $group = 'default', $common = false, $expire = null ) {
-		return $this->_cache->replace( $key, $value, $group, $common, $expire );
+		return $this->cache->replace( $key, $value, $group, $common, $expire );
 	}
 
 	/**
@@ -126,7 +126,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function delete( $key, $group = 'default', $common = false ) {
-		return $this->_cache->delete( $key, $group, $common );
+		return $this->cache->delete( $key, $group, $common );
 	}
 
 	/**
@@ -136,7 +136,7 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return bool
 	 */
 	public function delete_group( $group, $common = false ) {
-		return $this->_cache->delete_group( $group, $common );
+		return $this->cache->delete_group( $group, $common );
 	}
 
 	/**
@@ -146,28 +146,28 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 	 * @return array
 	 */
 	public function get_cache_list( $group, $common = false ) {
-		return $this->_cache->get_cache_list( $group, $common );
+		return $this->cache->get_cache_list( $group, $common );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function flush() {
-		return $this->_cache->flush();
+		return $this->cache->flush();
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function close() {
-		return $this->_cache->close();
+		return $this->cache->close();
 	}
 
 	/**
 	 * switch blog
 	 */
 	public function switch_blog() {
-		$this->_cache->switch_blog();
+		$this->cache->switch_blog();
 	}
 
 	/**
@@ -212,14 +212,18 @@ class Cache implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Cache
 		$default = '___check_deleted___' . $this->app->utility->uuid();
 		foreach ( $this->get_delete_cache_group() as $group ) {
 			foreach ( $this->get_cache_list( $group, false ) as $key ) {
-				$default === $this->_cache->get( $key, $group, false, $default ) and $deleted ++;
-				$count ++;
+				if ( $default === $this->cache->get( $key, $group, false, $default ) ) {
+					$deleted++;
+				}
+				$count++;
 			}
 		}
 		foreach ( $this->get_delete_cache_common_group() as $group ) {
 			foreach ( $this->get_cache_list( $group, true ) as $key ) {
-				$default === $this->_cache->get( $key, $group, true, $default ) and $deleted ++;
-				$count ++;
+				if ( $default === $this->cache->get( $key, $group, true, $default ) ) {
+					$deleted++;
+				}
+				$count++;
 			}
 		}
 

@@ -54,7 +54,9 @@ class Option implements \WP_Framework_Cache\Interfaces\Cache {
 		if ( empty( $cache ) || ! is_array( $cache ) || count( $cache ) !== 2 ) {
 			return [ false, null ];
 		}
+
 		list( $value, $time ) = $cache;
+
 		$is_valid = empty( $time ) || $time >= time();
 		if ( ! $is_valid ) {
 			$this->delete( $key, $group, $common );
