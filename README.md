@@ -48,6 +48,5 @@
 |delete_cache_interval|キャッシュ削除間隔を設定 \[default = 86400]|
 
 # Author
-
-[GitHub (Technote)](https://github.com/technote-space)
-[Blog](https://technote.space)
+- [GitHub (Technote)](https://github.com/technote-space)
+- [Blog](https://technote.space)
